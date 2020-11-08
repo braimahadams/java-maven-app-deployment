@@ -18,14 +18,14 @@ pipeline {
         }
         stage("build jar") {
             steps {
-                node() {
+                script {
                     buildJar()
                 }
             }
         }
         stage("build image") {
             steps {
-                node() {
+                script {
                     buildImage()
                 }
             }

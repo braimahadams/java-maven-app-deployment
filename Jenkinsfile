@@ -6,6 +6,7 @@ pipeline {
                 script {
                     echo "Testing the application..."
                     echo "Testing change"
+                    echo "Testing change"
                 }
             }
         }

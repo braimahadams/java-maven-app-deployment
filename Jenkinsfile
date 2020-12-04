@@ -43,6 +43,9 @@ pipeline {
             steps {
                 script {
                     withKubeConfig([credentialsId: 'k8s-credentials', serverUrl: 'https://7293fae4-4c9d-4629-bc82-262d0a2b8e3c.eu-central-2.linodelke.net']) {
+                        withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                            sh "kubectl create secret docker-registry my-registry-key --docker-server=docker.io --docker-username=$USER --docker-password=$PASS"
+                        }
                         sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
                     }
                 }

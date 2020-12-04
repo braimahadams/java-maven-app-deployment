@@ -14,9 +14,12 @@ spec:
       labels:
         app: java-maven-app
     spec:
+      imagePullSecrets:
+        - name: my-registry-key
       containers:
       - name: java-maven-app
         image: nanajanashia/demo-app:$IMAGE_NAME
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
 

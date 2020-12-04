@@ -1,38 +1,52 @@
-def gv
+#!/usr/bin/env groovy
 
 pipeline {
     agent any
+    tools {
+        maven 'Maven'
+    }
     stages {
-        stage("init") {
+        stage('increment version') {
             steps {
                 script {
-                    gv = load "script.groovy"
+                    echo 'incrementing app version...'
+                    sh 'mvn build-helper:parse-version versions:set \
+                        -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                        versions:commit'
+                    def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                    def version = matcher[0][1]
+                    env.IMAGE_NAME = "$version-$BUILD_NUMBER"
                 }
             }
         }
-        stage("build jar") {
+        stage('build app') {
             steps {
                 script {
-                    echo "building jar"
-                    //gv.buildJar()
+                    echo "building the application..."
+                    sh 'mvn clean package'
                 }
             }
         }
-        stage("build image") {
+        stage('build image') {
             steps {
                 script {
-                    echo "building image"
-                    //gv.buildImage()
+                    echo "building the docker image..."
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh "docker build -t nanajanashia/demo-app:${IMAGE_NAME} ."
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                        sh "docker push nanajanashia/demo-app:${IMAGE_NAME}"
+                    }
                 }
             }
         }
-        stage("deploy") {
+        stage('deploy') {
             steps {
                 script {
-                    echo "deploying"
-                    //gv.deployApp()
+                    withKubeConfig([credentialsId: 'k8s-credentials', serverUrl: 'https://7293fae4-4c9d-4629-bc82-262d0a2b8e3c.eu-central-2.linodelke.net']) {
+                        sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
+                    }
                 }
             }
         }
-    }   
+    }
 }

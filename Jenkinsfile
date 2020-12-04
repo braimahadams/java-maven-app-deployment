@@ -20,7 +20,10 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                   echo 'deploying docker image to EC2...'
+                   echo 'deploying docker image...'
+                   withKubeConfig([credentialsId: 'k8s-credentials', serverUrl: 'https://10A6677B7BAA541A0D643A33CD044365.yl4.eu-west-3.eks.amazonaws.com']) {
+                       sh 'kubectl create deployment nginx-depl --image=nginx'
+                   }
                 }
             }
         }

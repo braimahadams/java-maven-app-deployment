@@ -18,7 +18,7 @@ spec:
         - name: my-registry-key
       containers:
         - name: $APP_NAME
-          image: nanajanashia/demo-app:$IMAGE_NAME
+          image: $IMAGE_REPO:$IMAGE_NAME
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

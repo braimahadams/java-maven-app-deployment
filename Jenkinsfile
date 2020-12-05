@@ -5,6 +5,10 @@ pipeline {
     tools {
         maven 'Maven'
     }
+    environment {
+        ECR_REPO_URL = '664574038682.dkr.ecr.eu-west-3.amazonaws.com'
+        IMAGE_REPO = "${ECR_REPO_URL}/java-maven-app"
+    }
     stages {
         stage('increment version') {
             steps {
@@ -16,6 +20,7 @@ pipeline {
                     def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
                     def version = matcher[0][1]
                     env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+                    echo "############ ${IMAGE_REPO}"
                 }
             }
         }
@@ -31,10 +36,10 @@ pipeline {
             steps {
                 script {
                     echo "building the docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "docker build -t nanajanashia/demo-app:${IMAGE_NAME} ."
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh "docker push nanajanashia/demo-app:${IMAGE_NAME}"
+                    withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh "docker build -t ${IMAGE_REPO}:${IMAGE_NAME} ."
+                        sh "echo $PASS | docker login -u $USER --password-stdin ${IMAGE_REPO}"
+                        sh "docker push ${IMAGE_REPO}:${IMAGE_NAME}"
                     }
                 }
             }

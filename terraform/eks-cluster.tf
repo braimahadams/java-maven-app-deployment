@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "myapp-cluster-bucket"
+    bucket = "myapp-cluster-bucket-new"
     key = "myapp/state.tfstate"
     region = "eu-west-3"
   }

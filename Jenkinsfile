@@ -11,6 +11,10 @@ pipeline {
     }
     stages {
         stage('provision cluster') {
+            environment {
+                TF_VAR_env_prefix = "test"
+                TF_VAR_k8s_version = "1.18"
+            }
             steps {
                 script {
                     dir('terraform') {
@@ -25,7 +29,8 @@ pipeline {
                             script: "terraform output cluster_url",
                             returnStdout: true
                         )
-                        env.KUBECONFIG=kubeconfig.yaml
+                        sh "ls"
+                        env.KUBECONFIG="./kubeconfig.yaml"
                         sh "kubectl get node"
                     }
                 }

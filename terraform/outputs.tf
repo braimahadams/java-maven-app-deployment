@@ -5,3 +5,7 @@ output repo_url  {
 output cluster_url {
   value = module.eks.cluster_endpoint
 }
+
+output kubeconfig {
+  value = "module.eks.kubeconfig"
+}

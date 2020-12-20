@@ -29,7 +29,14 @@ pipeline {
                             script: "terraform output cluster_url",
                             returnStdout: true
                         )
-                        sh "ls"
+                        env.REPO_USER = sh(
+                            script: "terraform output ecr_user_name",
+                            returnStdout: true
+                        )
+                        env.REPO_PWD = sh(
+                            script: "terraform output ecr_user_password",
+                            returnStdout: true
+                        )
                         env.KUBECONFIG="./kubeconfig.yaml"
                         sh "kubectl get node"
                     }
@@ -61,11 +68,9 @@ pipeline {
             steps {
                 script {
                     echo "building the docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "docker build -t ${DOCKER_REPO_URL}:${IMAGE_NAME} ."
-                        sh "echo $PASS | docker login -u $USER --password-stdin ${DOCKER_REPO_URL}"
-                        sh "docker push ${DOCKER_REPO_URL}:${IMAGE_NAME}"
-                    }
+                    sh "docker build -t ${DOCKER_REPO_URL}:${IMAGE_NAME} ."
+                    sh "echo ${REPO_PWD} | docker login -u ${REPO_USER} --password-stdin ${DOCKER_REPO_URL}"
+                    sh "docker push ${DOCKER_REPO_URL}:${IMAGE_NAME}"
                 }
             }
         }

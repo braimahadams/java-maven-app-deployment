@@ -7,3 +7,5 @@ resource "aws_ecr_repository" "myapp-repo" {
     scan_on_push = true
   }
 }
+
+data "aws_ecr_authorization_token" "token" {}

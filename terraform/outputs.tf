@@ -9,3 +9,12 @@ output cluster_url {
 output kubeconfig {
   value = "module.eks.kubeconfig"
 }
+
+output ecr_user_name {
+  value = data.aws_ecr_authorization_token.token.user_name
+}
+
+output ecr_user_password {
+  value = data.aws_ecr_authorization_token.token.password
+  sensitive = true
+}

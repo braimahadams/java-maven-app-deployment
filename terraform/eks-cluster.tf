@@ -1,3 +1,11 @@
+terraform {
+  backend "s3" {
+    bucket = "myapp-cluster-bucket"
+    key = "myapp/state.tfstate"
+    region = "eu-west-3"
+  }
+}
+
 provider "kubernetes" {
     load_config_file = "false"
     host = data.aws_eks_cluster.myapp-cluster.endpoint

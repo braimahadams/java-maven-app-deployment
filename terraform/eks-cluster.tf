@@ -41,3 +41,9 @@ module "eks" {
         }
     ]
 }
+
+resource "local_file" "kube_config_file" {
+    content  = module.eks.kubeconfig
+    filename = "kubeconfig.yaml"
+    file_permission = "400"
+}

@@ -6,10 +6,31 @@ pipeline {
         maven 'Maven'
     }
     environment {
-        DOCKER_REPO_SERVER = '664574038682.dkr.ecr.eu-west-3.amazonaws.com'
-        DOCKER_REPO = "${DOCKER_REPO_SERVER}/java-maven-app"
+        AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
     }
     stages {
+        stage('provision cluster') {
+            steps {
+                script {
+                    dir('terraform') {
+                        echo "creating ECR repository and EKS cluster"
+                        sh "terraform init"
+                        sh "terraform apply --auto-approve"
+                        env.DOCKER_REPO_URL = sh(
+                            script: "terraform output repo_url",
+                            returnStdout: true
+                        )
+                        env.K8S_CLUSTER_URL = sh(
+                            script: "terraform output cluster_url",
+                            returnStdout: true
+                        )
+                        env.KUBECONFIG=kubeconfig.yaml
+                        sh "kubectl get node"
+                    }
+                }
+            }
+        }
         stage('increment version') {
             steps {
                 script {
@@ -36,17 +57,15 @@ pipeline {
                 script {
                     echo "building the docker image..."
                     withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh "docker build -t ${DOCKER_REPO}:${IMAGE_NAME} ."
-                        sh "echo $PASS | docker login -u $USER --password-stdin ${DOCKER_REPO_SERVER}"
-                        sh "docker push ${DOCKER_REPO}:${IMAGE_NAME}"
+                        sh "docker build -t ${DOCKER_REPO_URL}:${IMAGE_NAME} ."
+                        sh "echo $PASS | docker login -u $USER --password-stdin ${DOCKER_REPO_URL}"
+                        sh "docker push ${DOCKER_REPO_URL}:${IMAGE_NAME}"
                     }
                 }
             }
         }
         stage('deploy') {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
-                AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
                 APP_NAME = 'java-maven-app'
             }
             steps {

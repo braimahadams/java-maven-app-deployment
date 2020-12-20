@@ -37,9 +37,9 @@ pipeline {
                             script: "terraform output ecr_user_password",
                             returnStdout: true
                         ).trim()
-                        env.KUBECONFIG="./kubeconfig.yaml"
-                        sh "kubectl get node"
                     }
+                    env.KUBECONFIG="terraform/kubeconfig.yaml"
+                    sh "kubectl get node"
                 }
             }
         }

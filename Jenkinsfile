@@ -24,19 +24,19 @@ pipeline {
                         env.DOCKER_REPO_URL = sh(
                             script: "terraform output repo_url",
                             returnStdout: true
-                        )
+                        ).trim()
                         env.K8S_CLUSTER_URL = sh(
                             script: "terraform output cluster_url",
                             returnStdout: true
-                        )
+                        ).trim()
                         env.REPO_USER = sh(
                             script: "terraform output ecr_user_name",
                             returnStdout: true
-                        )
+                        ).trim()
                         env.REPO_PWD = sh(
                             script: "terraform output ecr_user_password",
                             returnStdout: true
-                        )
+                        ).trim()
                         env.KUBECONFIG="./kubeconfig.yaml"
                         sh "kubectl get node"
                     }

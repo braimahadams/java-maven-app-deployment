@@ -7,7 +7,7 @@ output cluster_url {
 }
 
 output kubeconfig {
-  value = "module.eks.kubeconfig"
+  value = module.eks.kubeconfig
 }
 
 output ecr_user_name {

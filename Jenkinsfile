@@ -17,6 +17,7 @@ pipeline {
                 script {
                     echo "Building the application..."
                     echo "Testing webhook..."
+                    echo "Testing webhook..."
                 }
             }
         }

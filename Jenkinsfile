@@ -3,15 +3,23 @@
 // Reference the GitLab connection name from your Jenkins Global configuration (https://JENKINS_URL/configure, GitLab section)
 properties([gitLabConnection('test-gitlab-hook')])
 
-node {
-  checkout scm // Jenkins will clone the appropriate git branch, no env vars needed
-
-  // Further build steps happen here
-}
+properties([
+      gitLabConnection('test-gitlab-hook'),
+      pipelineTriggers([
+            [
+                  $class               : 'GitLabPushTrigger',
+                  triggerOnPush        : true,
+                  triggerOnMergeRequest: true,
+            ]
+      ])
+])
 
 pipeline {
     agent any
     stages {
+        stage('Checkout') {
+            checkout scm
+        }
         stage('test') {
             steps {
                 script {

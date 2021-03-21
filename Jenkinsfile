@@ -14,12 +14,15 @@ properties([
       ])
 ])
 
+node {
+    stage('Checkout') {
+        checkout scm
+    }
+}
+
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
-            checkout scm
-        }
         stage('test') {
             steps {
                 script {

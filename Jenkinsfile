@@ -7,6 +7,7 @@ pipeline {
             steps {
                 script {
                     echo "Testing the application..."
+                    echo "Testing webhook..."
                 }
             }
         }

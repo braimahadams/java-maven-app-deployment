@@ -8,6 +8,7 @@ pipeline {
                 script {
                     echo "Testing the application..."
                     echo "Testing webhook..."
+                    echo "Testing webhook..."
                 }
             }
         }

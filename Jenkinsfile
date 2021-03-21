@@ -3,16 +3,6 @@
 // Reference the GitLab connection name from your Jenkins Global configuration (https://JENKINS_URL/configure, GitLab section)
 properties([gitLabConnection('test-gitlab-hook')])
 
-properties([
-      gitLabConnection('test-gitlab-hook'),
-      pipelineTriggers([
-            [
-                  $class               : 'GitLabPushTrigger',
-                  triggerOnPush        : true,
-                  triggerOnMergeRequest: true,
-            ]
-      ])
-])
 
 node {
     stage('Checkout') {

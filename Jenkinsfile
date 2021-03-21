@@ -3,6 +3,7 @@
 // Reference the GitLab connection name from your Jenkins Global configuration (https://JENKINS_URL/configure, GitLab section)
 
 properties([
+      $class: 'GitLabConnectionProperty',
       gitLabConnection('test-gitlab-hook'),
       pipelineTriggers([
             [

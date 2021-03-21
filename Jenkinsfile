@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // Reference the GitLab connection name from your Jenkins Global configuration (https://JENKINS_URL/configure, GitLab section)
-properties([gitLabConnection('your-gitlab-connection-name')])
+properties([gitLabConnection('test-gitlab-hook')])
 
 node {
   checkout scm // Jenkins will clone the appropriate git branch, no env vars needed
@@ -16,6 +16,7 @@ pipeline {
             steps {
                 script {
                     echo "Testing the application..."
+                    echo "Testing webhook..."
                     echo "Testing webhook..."
                     echo "Testing webhook..."
                 }

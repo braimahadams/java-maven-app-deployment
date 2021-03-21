@@ -2,7 +2,7 @@
 
 // Reference the GitLab connection name from your Jenkins Global configuration (https://JENKINS_URL/configure, GitLab section)
 
-properties([
+/*properties([
       gitLabConnection('test-gitlab-hook'),
       pipelineTriggers([
             [
@@ -10,7 +10,7 @@ properties([
                 triggerOnPush        : true
             ]
       ])
-])
+])*/
 
 pipeline {
     agent any

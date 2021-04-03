@@ -27,9 +27,9 @@ pipeline {
                     remote.host = "157.230.120.252"
                     remote.allowAnyHosts = true
                     
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', usernameVariable: 'user')]) {
-                        remote.user = user
-                        sshCommand remote: remote, command: "ls -lrt"
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key')]) {
+                        remote.user = "root"
+                        sshCommand remote: remote, command: "ls -l"
                     }
                 }
             }

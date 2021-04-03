@@ -41,7 +41,9 @@ pipeline {
                         sshCommand remote: remote, command: "ls -l"
                         
                         // set AWS credentials
-                        sshScript remote: remote, script: "ansible/prepare-server.sh ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY}"
+                        sshScript remote: remote, script: "ansible/prepare-server.sh"
+                        sshCommand remote: remote, command: 'export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID'
+                        sshCommand remote: remote, command: 'export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY'
                         
                         sshCommand remote: remote, command: "ansible-playbook docker-and-compose.yaml"
                     }

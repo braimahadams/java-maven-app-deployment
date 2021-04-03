@@ -14,7 +14,7 @@ pipeline {
 
                         echo "copying ssh keys for ec2 instances"
                         withCredentials([sshUserPrivateKey(credentialsId: 'ec2-server-key', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
-                            sh 'scp $keyfile root@$ANSIBLE_SERVER:/root/key.pem'
+                            sh 'scp $keyfile root@$ANSIBLE_SERVER:/root/ssh-key.pem'
                         }
                     }                               
                 }
@@ -35,6 +35,7 @@ pipeline {
                         remote.user = user
 
                         sshCommand remote: remote, command: "ls -l"
+                        sshCommand remote: remote, command: "ansible-playbook docker-and-compose.yaml"
                     }
                 }
             }

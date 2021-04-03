@@ -9,7 +9,7 @@ pipeline {
                 script {
                     echo "copying ansible folder to ansible server"
                     sshagent(['ansible-server-key']) {
-                        sh "scp ansible/ansible.cfg ${ANSIBLE_SERVER}:/root"                      
+                        sh "scp -o StrictHostKeyChecking=no ansible/ansible.cfg ${ANSIBLE_SERVER}:/root"                      
                     }                               
                 }
             }

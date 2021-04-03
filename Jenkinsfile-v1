@@ -21,6 +21,10 @@ pipeline {
             }
         }
         stage("execute ansible playbook from the ansible-server") {
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+            }
             steps {
                 script {
                     echo "executing ansible-playbook"
@@ -35,10 +39,10 @@ pipeline {
                         remote.user = user
 
                         sshCommand remote: remote, command: "ls -l"
-                        sshCommand remote: remote, command: "apt update"
-                        sshCommand remote: remote, command: "apt install ansible -y"
-                        sshCommand remote: remote, command: "apt install python3-pip -y"
-                        sshCommand remote: remote, command: "pip3 install boto3 botocore"
+                        
+                        // set AWS credentials
+                        sshScript remote: remote, script: "ansible/prepare-server.sh ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY}"
+                        
                         sshCommand remote: remote, command: "ansible-playbook docker-and-compose.yaml"
                     }
                 }

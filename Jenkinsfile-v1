@@ -35,6 +35,9 @@ pipeline {
                         remote.user = user
 
                         sshCommand remote: remote, command: "ls -l"
+                        sshCommand remote: remote, command: "apt update"
+                        sshCommand remote: remote, command: "apt install ansible -y"
+                        sshCommand remote: remote, command: "apt install python3-pip -y"
                         sshCommand remote: remote, command: "pip3 install boto3 botocore"
                         sshCommand remote: remote, command: "ansible-playbook docker-and-compose.yaml"
                     }

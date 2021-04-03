@@ -1,12 +1,16 @@
 pipeline {
     agent any
+    environment {
+        ANSIBLE_SERVER = "157.230.120.252"
+    }
     stages {
         stage("copy playbook to ansible-server") {
             steps {
                 script {
                     echo "copying ansible folder to ansible server"
-
-                    
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', keyFileVariable: 'identity', usernameVariable: 'user')]) {
+                        sh "scp -i ${identity} ansible/ansible.cfg ${ANSIBLE_SERVER}:/root"            
+                    }                           
                 }
             }
         }
@@ -25,15 +29,14 @@ pipeline {
                     
                     def remote = [:]
                     remote.name = "ansible-server"
-                    remote.host = "157.230.120.252"
+                    remote.host = ANSIBLE_SERVER
                     remote.allowAnyHosts = true
                     
                     withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', keyFileVariable: 'identity', usernameVariable: 'user')]) {
                         remote.identityFile = identity
                         remote.user = user
-                        stage('Remote SSH') {
-                            sshCommand remote: remote, command: "ls -l"
-                        }
+
+                        sshCommand remote: remote, command: "ls -l"
                     }
                 }
             }

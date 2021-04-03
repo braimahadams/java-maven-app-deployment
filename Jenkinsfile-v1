@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    stages {
+        stage("copy playbook to ansible-server") {
+            steps {
+                script {
+                    echo "copying ansible folder to ansible server"
+
+                    
+                }
+            }
+        }
+        stage("copy ssh keys for Ansible") {
+            steps {
+                script {
+                    echo "copying ssh keys for ec2 instances"
+                    
+                }
+            }
+        }
+        stage("execute ansible playbook from the ansible-server") {
+            steps {
+                script {
+                    echo "executing ansible-playbook"
+                    
+                    def remote = [:]
+                    remote.host = "157.230.120.252"
+                    remote.allowAnyHosts = true
+                    
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', usernameVariable: 'user')]) {
+                        remote.user = user
+                        sshCommand remote: remote, command: "ls -lrt"
+                    }
+                }
+            }
+        }
+    }   
+}

@@ -25,11 +25,13 @@ pipeline {
                     
                     def remote = [:]
                     remote.host = "157.230.120.252"
+                    remote.user = "root"
                     remote.allowAnyHosts = true
                     
                     withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key')]) {
-                        remote.user = "root"
-                        sshCommand remote: remote, command: "ls -l"
+                        stage('Remote SSH') {
+                            sshCommand remote: remote, command: "ls -l"
+                        }
                     }
                 }
             }

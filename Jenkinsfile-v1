@@ -8,9 +8,9 @@ pipeline {
             steps {
                 script {
                     echo "copying ansible folder to ansible server"
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', keyFileVariable: 'identity', usernameVariable: 'user')]) {
-                        sh "scp -i ${identity} ansible/ansible.cfg ${ANSIBLE_SERVER}:/root"            
-                    }                           
+                    sshagent(['ansible-server-key']) {
+                        sh "scp ansible/ansible.cfg ${ANSIBLE_SERVER}:/root"                      
+                    }                               
                 }
             }
         }

@@ -4,22 +4,19 @@ pipeline {
         ANSIBLE_SERVER = "157.230.120.252"
     }
     stages {
-        stage("copy playbook to ansible-server") {
+        stage("copy ansible folder and ec2 access key to ansible-server") {
             steps {
                 script {
-                    echo "copying ansible folder to ansible server"
                     sshagent(['ansible-server-key']) {
+                        echo "copying ansible folder to ansible server"
                         // ${ANSIBLE_SERVER}:/root without root will give jenkins@${ANSIBLE_SERVER}:/root
-                        sh "scp -o StrictHostKeyChecking=no ansible/ansible.cfg root@${ANSIBLE_SERVER}:/root"                      
+                        sh "scp -o StrictHostKeyChecking=no ansible/* root@${ANSIBLE_SERVER}:/root"    
+
+                        echo "copying ssh keys for ec2 instances"
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-server-key', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                            sh "scp ${keyfile} root@${ANSIBLE_SERVER}:/root/key.pem"
+                        }
                     }                               
-                }
-            }
-        }
-        stage("copy ssh keys for Ansible") {
-            steps {
-                script {
-                    echo "copying ssh keys for ec2 instances"
-                    
                 }
             }
         }
@@ -33,8 +30,8 @@ pipeline {
                     remote.host = ANSIBLE_SERVER
                     remote.allowAnyHosts = true
                     
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', keyFileVariable: 'identity', usernameVariable: 'user')]) {
-                        remote.identityFile = identity
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                        remote.identityFile = keyfile
                         remote.user = user
 
                         sshCommand remote: remote, command: "ls -l"

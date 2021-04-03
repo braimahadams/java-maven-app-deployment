@@ -14,7 +14,7 @@ pipeline {
 
                         echo "copying ssh keys for ec2 instances"
                         withCredentials([sshUserPrivateKey(credentialsId: 'ec2-server-key', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
-                            sh "scp ${keyfile} root@${ANSIBLE_SERVER}:/root/key.pem"
+                            sh 'scp $keyfile root@$ANSIBLE_SERVER:/root/key.pem'
                         }
                     }                               
                 }

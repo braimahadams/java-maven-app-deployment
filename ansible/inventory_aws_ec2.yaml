@@ -1,6 +1,6 @@
 ---
 plugin: aws_ec2
-profile: default
+boto_profile: dev
 regions:
   - eu-west-3
 keyed_groups:

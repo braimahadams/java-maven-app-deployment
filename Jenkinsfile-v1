@@ -24,6 +24,7 @@ pipeline {
                     echo "executing ansible-playbook"
                     
                     def remote = [:]
+                    remote.name = "ansible-server"
                     remote.host = "157.230.120.252"
                     remote.user = "root"
                     remote.allowAnyHosts = true

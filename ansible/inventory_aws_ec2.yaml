@@ -1,6 +1,7 @@
 ---
 plugin: aws_ec2
-regions: 
+boto_profile: aws_profile
+regions:
   - eu-west-3
 keyed_groups:
   - key: tags

@@ -1,32 +1,46 @@
-def gv
-
 pipeline {
     agent any
+    environment {
+        ANSIBLE_SERVER = "157.230.120.252"
+    }
     stages {
-        stage("build jar") {
+        stage("copy ansible folder and ec2 access key to ansible-server") {
             steps {
                 script {
-                    echo "building the application..."
-                    sh 'mvn package'
+                    sshagent(['ansible-server-key']) {
+                        echo "copying ansible folder to ansible server"
+                        // ${ANSIBLE_SERVER}:/root without root will give jenkins@${ANSIBLE_SERVER}:/root
+                        sh "scp -o StrictHostKeyChecking=no ansible/* root@${ANSIBLE_SERVER}:/root"    
+
+                        echo "copying ssh keys for ec2 instances"
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-server-key', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                            sh 'scp $keyfile root@$ANSIBLE_SERVER:/root/ssh-key.pem'
+                        }
+                    }                               
                 }
             }
         }
-        stage("build image") {
+        stage("execute ansible playbook from the ansible-server") {
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+            }
             steps {
                 script {
-                    echo "building the docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh 'docker build -t nanajanashia/demo-app:jma-2.0 .'
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh 'docker push nanajanashia/demo-app:jma-2.0'
+                    echo "executing ansible-playbook"
+                    
+                    def remote = [:]
+                    remote.name = "ansible-server"
+                    remote.host = ANSIBLE_SERVER
+                    remote.allowAnyHosts = true
+                    
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                        remote.identityFile = keyfile
+                        remote.user = user
+
+                        sshCommand remote: remote, command: "ls -l"
+                        sshCommand remote: remote, command: "ansible-playbook docker-and-compose.yaml"
                     }
-                }
-            }
-        }
-        stage("deploy") {
-            steps {
-                script {
-                    echo 'deploying the application...'
                 }
             }
         }

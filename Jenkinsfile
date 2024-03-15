@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         stage('init') {
             steps {
                 script {
@@ -18,23 +19,23 @@ pipeline {
         stage('Build jar') {
             steps {
                 script {
-                    buildJar()
+                    gv.buildJar()
                 }
             }
         }
-
+        
         stage('Build docker image') {
             steps {
                 script {
-                    buildAndPushDockerImage()
+                    gv.buildAndPushDockerImage()
                 }
             }
         }
-
+        
         stage('Deploy') {
             steps {
                 script {
-                    deployApp()
+                    gv.deployApp()
                 }
             }
         }

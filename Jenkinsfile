@@ -41,9 +41,9 @@ pipeline {
                 script {
                     def userInput = input (
                         message: 'where would you like to deploy to?'
-                        parameters: [choice(name: 'ENV', choices: ['DEV', 'QA', 'PROD'], description: 'Which environment would you like to deploy to?')]
+                        parameters: [choice (name: 'ENV', choices: ['DEV', 'QA', 'PROD'], description: '') ]
                     )
-                    
+
                     gv.deployApp()
                     echo "Deploying to ${params.ENV}"
                 }

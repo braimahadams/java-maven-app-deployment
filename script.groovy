@@ -21,8 +21,6 @@ def message() {
             choice(name: 'ENVIRONMENT', choices: ['Development', 'Staging', 'Production'], description: 'Select the environment')
         }
     }
-    echo "Greeting: ${params.GREETING}"
-    echo ${params.ENVIRONMENT}
 }
 
 return this

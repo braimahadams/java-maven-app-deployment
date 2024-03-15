@@ -9,7 +9,7 @@ def buildAndPushDockerImage () {
         sh "docker build -t braimahadams/java-maven-app:jma-3.0 ."
         sh "echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin"
         sh "docker push braimahadams/java-maven-app:jma-3.0 " 
-        }
+    }
 }
 
 def deployApp () {

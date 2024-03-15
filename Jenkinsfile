@@ -43,11 +43,9 @@ pipeline {
                     ok 'Done'
                     parameters {
                         choice(name: 'ENV', choices: ['DEV', 'STAGING', 'PROD'], description: '')
-                        choice(name: 'ENV', choices: ['DEV', 'STAGING', 'PROD'], description: '')
                     }
                 script {
                     gv.deployApp()
-                    echo "Deploying to ${params.ENV}"
                     echo "Deploying to ${params.ENV}"
                 }
             }

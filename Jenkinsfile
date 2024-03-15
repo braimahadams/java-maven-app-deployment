@@ -27,11 +27,8 @@ pipeline {
 
         stage('test') {
             steps {
-                script {
-                    if (params.executeTests) {
-                        gv.testApp()
-                    }
-                }
+                expression {
+                    params.executeTests
             }
         }
         

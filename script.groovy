@@ -1,14 +1,14 @@
 #!/usr/bin/env groovy
 
-dev buildApp() {
+def buildApp() {
     echo 'building the app'
 }
 
-dev testApp() {
+def testApp() {
      echo 'testing the app'
 }
 
-dev deployApp() {
+def deployApp() {
     echo 'deploying the app'
     echo "deploying version ${params.VERSION} of the app"
 }

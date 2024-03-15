@@ -1,51 +1,37 @@
-def gv
-
 pipeline {
     agent any
-    parameters {
-        choice(name: 'VERSION', choices: ['1.0', '2.0', '3.0'], description: 'Which version would you like to build?')
-        booleanParam(name: 'executeTests', defaultValue: true, description: 'Should we execute the tests?')
-        string(name: 'GREETING', defaultValue: 'Hello', description: 'How should I greet the world?')
+    tools {
+        maven 'maven-3.9.6'
     }
-    
+
     stages {
-        stage('init') {
+        stage('Build jar') {
             steps {
                 script {
-                    gv = load 'script.groovy'
+                    echo "building the application..."      
+                    sh 'mvn package'
                 }
             }
         }
         
-        stage('build') {
+        stage('Build docker image') {
             steps {
                 script {
-                    gv.buildApp()
-                }
-            }
-        }
-
-        stage('test') {
-            when {
-                expression { params.executeTests }
-            }
-            steps {
-                script {
-                    gv.testApp()
+                    echo "building the docker image..."    
+                    withCredentials ([usernamePassword(credentialsId: 'docker-hub-repo', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh "docker build -t braimahadams/java-maven-app:jma-2.0 ."
+                        sh "scho ${PASSWORD} | docker login -u ${USERNAME} --password-stdin"
+                        sh "docker push braimahadams/java-maven-app:jma-2.0"
+                    }
                 }
             }
         }
         
-        stage('deploy') {
+        stage('Deploy') {
             steps {
                 script {
-                    def userInput = input (
-                        message: 'where would you like to deploy to?',
-                        parameters: [choice (name: 'ENV', choices: ['DEV', 'QA', 'PROD'], description: '') ]
-                    )
-
-                    gv.deployApp()
-                    echo "Deploying to ${params.ENV}"
+                    echo "deploying the application..."    
+                    // Add your deployment steps here
                 }
             }
         }

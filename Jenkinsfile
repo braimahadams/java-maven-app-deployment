@@ -7,7 +7,6 @@ pipeline {
     }
 
     stages {
-
         stage('init') {
             steps {
                 script {
@@ -23,16 +22,15 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Build docker image') {
             steps {
                 script {
-                   buildAndPushDockerImage()
-                    }
+                    buildAndPushDockerImage()
                 }
             }
         }
-        
+
         stage('Deploy') {
             steps {
                 script {
@@ -41,3 +39,4 @@ pipeline {
             }
         }
     }
+}

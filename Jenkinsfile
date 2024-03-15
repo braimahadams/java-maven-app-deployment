@@ -30,7 +30,9 @@ pipeline {
                 expression { params.executeTests }
             }
             steps {
-                // Your test steps here
+                script {
+                    gv.testApp()
+                }
             }
         }
         

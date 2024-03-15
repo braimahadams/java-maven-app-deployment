@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     def userInput = input (
-                        message: 'where would you like to deploy to?'
+                        message: 'where would you like to deploy to?',
                         parameters: [choice (name: 'ENV', choices: ['DEV', 'QA', 'PROD'], description: '') ]
                     )
 

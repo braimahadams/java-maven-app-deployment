@@ -1,22 +1,43 @@
+dev gv
+
 pipeline {
     agent any
+    parameters {
+        choice(name: 'VERSION', choices: ['1.0', '2.0', '3.0'], description: 'Which version would you like to build?')
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'Should we execute the tests?')
+        string(name: 'GREETING', defaultValue: 'Hello', description: 'How should I greet the world?')
+    }
     
     stages {
-        stage('Build') {
+        stage('init') {
             steps {
-                echo 'builing the app'
+                gv = load "script.groovy"
             }
         }
         
-        stage('Test') {
+        stage('build') {
             steps {
-                echo 'testing the app'
+                script {
+                    gv.buildApp()
+                }
+            }
+        }
+
+        stage('test') {
+            steps {
+                script {
+                    if (params.executeTests) {
+                        gv.testApp()
+                    }
+                }
             }
         }
         
-        stage('Deploy') {
+        stage('deploy') {
             steps {
-                echo 'deploying the app'
+                script {
+                    gv.deployApp()
+                }
             }
         }
     }
